@@ -3,6 +3,7 @@ express-locale
 ==============
 
 Express middleware to determine locale based on configuration and request.
+
 Configuration (likely from a JSON file) enables mappings and lookup priorities.
 
 ```javascript
@@ -14,7 +15,7 @@ app.use(locale({
         // ... defaults to user-agent's first full locale with fallback to en_US
     }))
     .use(function (req, res) {
-        res.end('Request locale: ' + req.locale + ' (' + req.localeSource + ')');
+        res.end('Request locale: ' + req.locale.code);
     })
     .listen(3000);
 ```
