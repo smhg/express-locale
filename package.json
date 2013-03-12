@@ -19,11 +19,8 @@
   ],
   "author": "Sam Hauglustaine",
   "license": "MIT",
-  "readmeFilename": "README.md",
+  "readmeFilename": "Readme.md",
   "gitHead": "18909159b2111cc1b5661d375325952c9605ec3a",
-  "dependencies": {
-    "underscore.string": "~2.3.1"
-  },
   "devDependencies": {
     "express": "~3.1.0",
     "mocha": "~1.8.2"

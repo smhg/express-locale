@@ -22,25 +22,20 @@ app.use(locale({
 
 
 ## Configuration
-#### Require a result
-`required` Boolean (false)
-
-An error will be thrown when set to *true*.
-
 #### Default locale string
-`default` String ('en_US')
+`default` String ('en_UK')
 
 #### Defining lookup priority
 `priority` Array (['default'])
 
-#### Limiting to predefined locales
+#### Defining allowed locales
 `allowed` Array (undefined)
 
 #### Mappings
 ##### Languages to locales
-`mapping.default` Array (undefined)
+`map.language` Array (undefined)
 ##### Domains to locales
-`mapping.domain` Array (undefined)
+`map.domain` Array (undefined)
 
 
 ## Custom lookups
