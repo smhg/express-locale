@@ -18,7 +18,12 @@ var express = require('express'),
 
 var app = express();
 app.use(locale({
-        // ... defaults to user-agent's first full locale with fallback to en_UK
+        // configuration, defaults to:
+        // {
+        //   "default": "en_UK",
+        //   "priority": ["user-agent", "default"],
+        //   "cookie": {"name": "locale"}
+        // }
     }))
     .use(function (req, res) {
         res.end('Request locale: ' + req.locale.code);
@@ -29,35 +34,46 @@ app.use(locale({
 
 
 ## Configuration
-#### Defining lookup priority
-`priority Array (['accept-language', 'default'])`
-The priority defines the order of lookups. The first lookup to return a locale will be the final result.
+#### priority
+Type: `Array` Default value `['accept-language', 'default']`
+
+Defines the order of lookups. The first lookup to return a locale will be the final result.
 
 Available values (lookups):
-* `domain`
 * `cookie`
+* `domain`
 * `accept-language`
 * `default`
 
-(Custom lookups) can be added.
+[Custom lookups](#custom-lookups) can be added.
 
-#### Default
-`default String ('en_UK')`
-The default locale to use (if 'default' is present in priority option).
+#### default
+Type: `String` Default value `'en_UK'`
 
-#### Defining allowed locales
-`allowed Array (undefined)`
+The default locale to use (if `'default'` is present in [priority](#priority)).
+
+#### allowed
+Type: `Array` Default value `undefined`
+
 Lookup results are validated against this list of allowed locales if provided.
 
-#### Mappings
-##### Languages to locales
-`map.language Array (undefined)`
+#### cookie.name
+Type: `String` Default value `'locale'`
+
+If `'cookie'` is present in [priority](#priority), a cookie with this name is read.
+
+Use with [cookieParser](http://www.senchalabs.org/connect/cookieParser.html) middleware.
+
+### Mappings
+#### map.language
+Type: `Array` Default value `undefined`
+
 Lookup results that return only a language can be mapped to a default locale.
 
-##### Domains to locales
-`map.domain Array (undefined)`
-If provided and 'domain' is present in the priority list, the host part of the request is mapped to a locale.
+#### map.domain
+Type: `Array` Default value `undefined`
 
+If provided and `'domain'` is present in [priority](#priority), the host part of the request is mapped to a locale.
 
 ## Custom lookups
 TODO: describe how to derive from path or querystring
