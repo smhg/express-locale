@@ -1,7 +1,8 @@
 var locale = require('..'),
   assert = require('assert'),
   http = require('http'),
-  express = require('express');
+  express = require('express'),
+  fs = require('fs');
 
 describe('express-locale', function () {
   it('should return a function', function () {
@@ -10,95 +11,114 @@ describe('express-locale', function () {
   });
 
   describe('request', function () {
-    var app;
+    var app,
+      config = {};
 
-    function openServer(localeConfig) {
-      return function (done) {
-        app = express()
-          .use(locale(localeConfig))
-          .use(function (req, res, next) {
-            res.end(JSON.stringify({locale: req.locale, source: req.localeSource}));
-          })
-          .listen(4000, done);
-      };
+    function startServer(done) {
+      app = express()
+        .use(express.cookieParser())
+        .use(locale(config))
+        .use(function (req, res, next) {
+          res.end(JSON.stringify(req.locale));
+        })
+        .listen(4000, done);
     }
 
-    function closeServer (done) {
+    function endServer (done) {
       app.close(done);
     }
 
-    function get(options, done) {
+    function get(headers, callback) {
       var data = '';
-      http.get(options, function (res) {
-        res.on('data', function (chunk) {
-          data += chunk;
+
+      if (typeof headers === 'function') {
+        callback = headers;
+        headers = {};
+      }
+
+      http.get({
+          host: 'localhost',
+          port: 4000,
+          headers: headers
+        }, function (res) {
+          res.on('data', function (chunk) {
+            data += chunk;
+          });
+          res.on('end', function () {
+            callback(JSON.parse(data));
+          });
         });
-        res.on('end', function () {
-          done(JSON.parse(data));
-        });
-      });
     }
 
+    beforeEach(startServer);
+    afterEach(endServer);
+
     describe('using default configuration', function () {
-      before(openServer());
       it('without any headers', function (done) {
-        get({
-          host: 'localhost',
-          port: 4000
-        }, function(data) {
-          assert.equal(data.locale, 'en_US');
-          assert.equal(data.source, 'default');
+        get(function(locale) {
+          assert.equal(locale.code, 'en_UK');
+          assert.equal(locale.source, 'default');
           done();
         });
       });
-      after(closeServer);
     });
 
-    describe('using allowed list of locales', function () {
-      before(openServer({
-        allowed: ['de_AT', 'de_DE', 'de_CH'],
-        priority: ['user-agent']
-      }));
-      it('with Accept header which should match a locale with a dash at the second place', function (done) {
+    describe('using allowed option', function () {
+      before(function () {
+        config = require('./fixture/allowed.json');
+      });
+      it('with "Accept-Language: de,de-CH;q=0.8,en;q=0.6"', function (done) {
         get({
-          host: 'localhost',
-          port: 4000,
-          headers: {
-            'Accept-Language': 'de,de-AT;q=0.8,en;q=0.6'
-          }
-        }, function(data) {
-          assert.equal(data.locale, 'de_AT');
-          assert.equal(data.source, 'user-agent');
+          'Accept-Language': 'de,de-CH;q=0.8,en;q=0.6'
+        }, function(locale) {
+          assert.equal(locale.code, 'de_CH');
+          assert.equal(locale.source, 'accept-language');
           done();
         });
       });
-      after(closeServer);
     });
 
-    describe('using mapping with default fallback', function () {
-      before(openServer({
-        mapping: {
-          "default": {
-            "en": "en_UK"
-          }
-        },
-        "default": 'en_UK',
-        priority: ['user-agent', 'default']
-      }));
-      it('with Accept header which should the default locale after mapping', function (done) {
+    describe('using map.language option', function () {
+      before(function () {
+        config = require('./fixture/map-language.json');
+      });
+      it('with "Accept-Language: de,de-CH;q=0.8,en;q=0.6"', function (done) {
         get({
-          host: 'localhost',
-          port: 4000,
-          headers: {
-            'Accept-Language': 'de;q=0.8,en;q=0.6'
-          }
-        }, function(data) {
-          assert.equal(data.locale, 'en_UK');
-          assert.equal(data.source, 'user-agent');
+          'Accept-Language': 'de,de-CH;q=0.8,en;q=0.6'
+        }, function(locale) {
+          assert.equal(locale.code, 'de_DE');
+          assert.equal(locale.source, 'accept-language');
           done();
         });
       });
-      after(closeServer);
+    });
+
+    describe('using map.domain option', function () {
+      before(function () {
+        config = require('./fixture/map-domain.json');
+      });
+      it('without any headers', function (done) {
+        get(function(locale) {
+          assert.equal(locale.code, 'nl_BE');
+          assert.equal(locale.source, 'domain');
+          done();
+        });
+      });
+    });
+
+    describe('using cookie lookup', function () {
+      before(function () {
+        config = require('./fixture/cookie.json');
+      });
+      it('with "Cookie: locale=nl_BE"', function (done) {
+        get({
+          'Cookie': 'locale=nl_BE'
+        }, function(locale) {
+          assert.equal(locale.code, 'nl_BE');
+          assert.equal(locale.source, 'cookie');
+          done();
+        });
+      });
     });
   });
 });

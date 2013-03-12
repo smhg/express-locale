@@ -1,0 +1,11 @@
+{
+  "map": {
+    "domain": {
+      "localhost": "nl_BE"
+    }
+  },
+  "priority": [
+    "domain",
+    "default"
+  ]
+}
