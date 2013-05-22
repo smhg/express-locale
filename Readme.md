@@ -60,9 +60,10 @@ Lookup results are validated against this list of allowed locales if provided.
 #### cookie.name
 Type: `String` Default value `'locale'`
 
-If `'cookie'` is present in [priority](#priority), a cookie with this name is read.
-
 Use with [cookieParser](http://www.senchalabs.org/connect/cookieParser.html) middleware.
+
+If `'cookie'` is present in [priority](#priority), a cookie with this name is read.
+You are responsible for writing the locale to the cookie (e.g. when a user changes their preferred locale in you application).
 
 ### Mappings
 #### map.language
