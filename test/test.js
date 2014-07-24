@@ -56,7 +56,7 @@ describe('express-locale', function () {
     describe('using default configuration', function () {
       it('without any headers', function (done) {
         get(function(locale) {
-          assert.equal(locale.code, 'en_UK');
+          assert.equal(locale.code, 'en_GB');
           assert.equal(locale.source, 'default');
           done();
         });
