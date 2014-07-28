@@ -48,7 +48,7 @@ Available values (lookups):
 [Custom lookups](#custom-lookups) can be added.
 
 #### default
-Type: `String` Default value `'en_UK'`
+Type: `String` Default value `'en_GB'`
 
 The default locale to use (if `'default'` is present in [priority](#priority)).
 
