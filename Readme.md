@@ -20,7 +20,7 @@ var app = express();
 app.use(locale({
         // configuration, defaults to:
         // {
-        //   "default": "en_UK",
+        //   "default": "en_GB",
         //   "priority": ["user-agent", "default"],
         //   "cookie": {"name": "locale"}
         // }
