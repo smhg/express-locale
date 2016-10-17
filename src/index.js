@@ -1,3 +1,5 @@
+import 'babel-polyfill';
+
 // lookup methods
 let lookups = {
   'cookie': function (req, options) {
