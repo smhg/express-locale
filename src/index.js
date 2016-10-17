@@ -1,5 +1,5 @@
 // lookup methods
-var lookups = {
+let lookups = {
   'cookie': function (req, options) {
     if (req.cookies) {
       return req.cookies[options.cookie.name];
@@ -11,7 +11,9 @@ var lookups = {
     }
   },
   'accept-language': function (req, options) {
-    var locale, accepted;
+    let locale;
+    let accepted;
+
     if (req.acceptsLanguages) {
       accepted = req.acceptsLanguages();
     } else if (req.acceptedLanguages) {
@@ -19,10 +21,12 @@ var lookups = {
     } else {
       return false;
     }
-    accepted.some(function (item) {
+
+    accepted.some(item => {
       locale = filter(complete(item.replace(/-+/g, '_'), options), options);
       return locale;
     });
+
     return locale;
   },
   'default': function (req, options) {
@@ -61,15 +65,15 @@ function lookup (source, req, options) {
 }
 
 function locale (config) {
-  var options = config || {};
+  let options = config || {};
 
   options['default'] = options['default'] || 'en_GB';
   options.cookie = options.cookie || {name: 'locale'};
   options.priority = options.priority || ['accept-language', 'default'];
 
   return function (req, res, next) {
-    options.priority.some(function (source) {
-      var locale = lookup(source, req, options);
+    options.priority.some(source => {
+      let locale = lookup(source, req, options);
       if (locale) {
         req.locale = {
           code: locale,

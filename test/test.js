@@ -1,23 +1,23 @@
-var locale = require('..');
-var assert = require('assert');
-var http = require('http');
-var express3 = require('express3');
+import locale from '..';
+import assert from 'assert';
+import http from 'http';
+import express3 from 'express3';
 
-describe('express-locale', function () {
-  it('should return a function', function () {
-    var type = typeof locale();
+describe('express-locale', () => {
+  it('should return a function', () => {
+    let type = typeof locale();
     assert.equal(type, 'function');
   });
 
-  describe('request', function () {
-    var app;
-    var config = {};
+  describe('request', () => {
+    let app;
+    let config = {};
 
     function startServer (done) {
       app = express3()
         .use(express3.cookieParser())
         .use(locale(config))
-        .use(function (req, res, next) {
+        .use((req, res, next) => {
           res.end(JSON.stringify(req.locale));
         })
         .listen(4000, done);
@@ -28,7 +28,7 @@ describe('express-locale', function () {
     }
 
     function get (headers, callback) {
-      var data = '';
+      let data = '';
 
       if (typeof headers === 'function') {
         callback = headers;
@@ -40,10 +40,10 @@ describe('express-locale', function () {
         port: 4000,
         headers: headers
       }, function (res) {
-        res.on('data', function (chunk) {
+        res.on('data', chunk => {
           data += chunk;
         });
-        res.on('end', function () {
+        res.on('end', () => {
           callback(JSON.parse(data));
         });
       });
@@ -52,9 +52,9 @@ describe('express-locale', function () {
     beforeEach(startServer);
     afterEach(endServer);
 
-    describe('using default configuration', function () {
-      it('without any headers', function (done) {
-        get(function (locale) {
+    describe('using default configuration', () => {
+      it('without any headers', done => {
+        get(locale => {
           assert.equal(locale.code, 'en_GB');
           assert.equal(locale.source, 'default');
           done();
@@ -62,14 +62,14 @@ describe('express-locale', function () {
       });
     });
 
-    describe('using allowed option', function () {
-      before(function () {
+    describe('using allowed option', () => {
+      before(() => {
         config = require('./fixture/allowed.json');
       });
-      it('with "Accept-Language: de,de-CH;q=0.8,en;q=0.6"', function (done) {
+      it('with "Accept-Language: de,de-CH;q=0.8,en;q=0.6"', done => {
         get({
           'Accept-Language': 'de,de-CH;q=0.8,en;q=0.6'
-        }, function (locale) {
+        }, locale => {
           assert.equal(locale.code, 'de_CH');
           assert.equal(locale.source, 'accept-language');
           done();
@@ -77,14 +77,14 @@ describe('express-locale', function () {
       });
     });
 
-    describe('using map.language option', function () {
-      before(function () {
+    describe('using map.language option', () => {
+      before(() => {
         config = require('./fixture/map-language.json');
       });
-      it('with "Accept-Language: de,de-CH;q=0.8,en;q=0.6"', function (done) {
+      it('with "Accept-Language: de,de-CH;q=0.8,en;q=0.6"', done => {
         get({
           'Accept-Language': 'de,de-CH;q=0.8,en;q=0.6'
-        }, function (locale) {
+        }, locale => {
           assert.equal(locale.code, 'de_DE');
           assert.equal(locale.source, 'accept-language');
           done();
@@ -92,12 +92,12 @@ describe('express-locale', function () {
       });
     });
 
-    describe('using map.domain option', function () {
-      before(function () {
+    describe('using map.domain option', () => {
+      before(() => {
         config = require('./fixture/map-domain.json');
       });
-      it('without any headers', function (done) {
-        get(function (locale) {
+      it('without any headers', done => {
+        get(locale => {
           assert.equal(locale.code, 'nl_BE');
           assert.equal(locale.source, 'domain');
           done();
@@ -105,14 +105,14 @@ describe('express-locale', function () {
       });
     });
 
-    describe('using cookie lookup', function () {
-      before(function () {
+    describe('using cookie lookup', () => {
+      before(() => {
         config = require('./fixture/cookie.json');
       });
-      it('with "Cookie: locale=nl_BE"', function (done) {
+      it('with "Cookie: locale=nl_BE"', done => {
         get({
           'Cookie': 'locale=nl_BE'
-        }, function (locale) {
+        }, locale => {
           assert.equal(locale.code, 'nl_BE');
           assert.equal(locale.source, 'cookie');
           done();
