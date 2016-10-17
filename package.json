@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint index.js lib test",
-    "test": "mocha"
+    "test": "mocha",
+    "preversion": "npm run lint && npm test",
+    "postversion": "git push && git push --tags"
   },
   "repository": {
     "type": "git",
