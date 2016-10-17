@@ -4,7 +4,7 @@
   "description": "Express middleware to determine locale",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint index.js lib",
+    "lint": "eslint index.js lib test",
     "test": "mocha"
   },
   "repository": {
@@ -20,8 +20,6 @@
   ],
   "author": "Sam Hauglustaine",
   "license": "MIT",
-  "readmeFilename": "Readme.md",
-  "gitHead": "18909159b2111cc1b5661d375325952c9605ec3a",
   "devDependencies": {
     "eslint": "3.8.0",
     "eslint-config-standard": "6.2.0",
