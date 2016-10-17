@@ -58,18 +58,18 @@ function complete (locale, options) {
 
 // lookup locale using specified source method
 function lookup (source, req, options) {
-  if (!lookups[source]) {
+  if (!(source in lookups)) {
     throw Error('Locale lookup source method "' + source + '" not defined');
   }
   return filter(complete(lookups[source](req, options), options), options);
 }
 
-function createLocaleMiddleware (config) {
-  let options = config || {};
-
-  options['default'] = options['default'] || 'en_GB';
-  options.cookie = options.cookie || {name: 'locale'};
-  options.priority = options.priority || ['accept-language', 'default'];
+function createLocaleMiddleware (options = {}) {
+  options = Object.assign({
+    default: 'en_GB',
+    cookie: {name: 'locale'},
+    priority: ['accept-language', 'default']
+  }, options);
 
   return function (req, res, next) {
     options.priority.some(source => {
@@ -81,6 +81,7 @@ function createLocaleMiddleware (config) {
           source: source
         };
       }
+
       return locale;
     });
 
