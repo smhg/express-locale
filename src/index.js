@@ -78,9 +78,13 @@ function createLocaleMiddleware (options = {}) {
       let locale = lookup(source, req, options);
 
       if (locale) {
+        let [language, region] = locale.split('_');
+
         req.locale = {
           code: locale,
-          source: source
+          source,
+          language,
+          region
         };
       }
 
