@@ -21,7 +21,7 @@ express().use(locale({
       // configuration, defaults to:
       // {
       //   "default": "en_GB",
-      //   "priority": ["user-agent", "default"],
+      //   "priority": ["accept-language", "default"],
       //   "cookie": {"name": "locale"}
       // }
     }))
