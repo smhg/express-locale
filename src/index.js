@@ -2,17 +2,17 @@ import 'babel-polyfill';
 
 // lookup methods
 let lookups = {
-  'cookie': function (req, options) {
+  'cookie': (req, options) => {
     if (req.cookies) {
       return req.cookies[options.cookie.name];
     }
   },
-  'domain': function (req, options) {
-    if (options.map && options.map.domain && req.host) {
-      return options.map.domain[req.host];
+  'domain': (req, options) => {
+    if (options.map && options.map.domain && (req.hostname || req.host)) {
+      return options.map.domain[req.hostname || req.host];
     }
   },
-  'accept-language': function (req, options) {
+  'accept-language': (req, options) => {
     let locale;
     let accepted;
 
@@ -31,7 +31,7 @@ let lookups = {
 
     return locale;
   },
-  'default': function (req, options) {
+  'default': (req, options) => {
     return options['default'];
   }
 };
