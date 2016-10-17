@@ -56,7 +56,7 @@ function complete (locale, options) {
   return locale;
 }
 
-// lookup locale using speficied source method
+// lookup locale using specified source method
 function lookup (source, req, options) {
   if (!lookups[source]) {
     throw Error('Locale lookup source method "' + source + '" not defined');
@@ -64,7 +64,7 @@ function lookup (source, req, options) {
   return filter(complete(lookups[source](req, options), options), options);
 }
 
-function locale (config) {
+function createLocaleMiddleware (config) {
   let options = config || {};
 
   options['default'] = options['default'] || 'en_GB';
@@ -74,6 +74,7 @@ function locale (config) {
   return function (req, res, next) {
     options.priority.some(source => {
       let locale = lookup(source, req, options);
+
       if (locale) {
         req.locale = {
           code: locale,
@@ -87,8 +88,8 @@ function locale (config) {
   };
 }
 
-locale.prototype.addLookup = function (name, lookup) {
+createLocaleMiddleware.prototype.addLookup = function (name, lookup) {
   lookups[name] = lookup;
 };
 
-module.exports = locale;
+module.exports = createLocaleMiddleware;

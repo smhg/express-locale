@@ -13,27 +13,30 @@ Configuration (likely from a JSON file) enables mappings and lookup priorities.
 
 ## Usage
 ```javascript
-var express = require('express'),
-    locale = require('express-locale');
+import express from 'express';
+import createLocaleMiddleware from 'express-locale';
 
-express().use(locale({
-      // ...
-      // configuration, defaults to:
-      // {
-      //   "default": "en_GB",
-      //   "priority": ["accept-language", "default"],
-      //   "cookie": {"name": "locale"}
-      // }
-    }))
-  .use(function (req, res) {
-      res.end('Request locale: ' + req.locale.code);
-    })
+express().use(createLocaleMiddleware())
+  .use((req, res) => {
+    res.end('Request locale: ' + req.locale.code);
+  })
   .listen(3000);
 ```
 **Note:** only full locales (language_REGION) are returned, but a mapping of languages to a default locale can be provided (see below).
 
 
 ## Configuration
+You can pass a configuration object to the `createLocaleMiddleware()` call above with the default being:
+```javascript
+{
+  {
+    "priority": ["accept-language", "default"],
+    "default": "en_GB",
+    "cookie": {"name": "locale"}
+  }
+}
+```
+
 #### priority
 Type: `Array` Default value `['accept-language', 'default']`
 

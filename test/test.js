@@ -1,11 +1,11 @@
-import locale from '..';
+import createLocaleMiddleware from '..';
 import assert from 'assert';
 import http from 'http';
 import express3 from 'express3';
 
 describe('express-locale', () => {
   it('should return a function', () => {
-    let type = typeof locale();
+    let type = typeof createLocaleMiddleware();
     assert.equal(type, 'function');
   });
 
@@ -16,7 +16,7 @@ describe('express-locale', () => {
     function startServer (done) {
       app = express3()
         .use(express3.cookieParser())
-        .use(locale(config))
+        .use(createLocaleMiddleware(config))
         .use((req, res, next) => {
           res.end(JSON.stringify(req.locale));
         })
