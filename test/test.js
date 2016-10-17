@@ -1,6 +1,7 @@
 var locale = require('..'),
   assert = require('assert'),
   http = require('http'),
+  express3 = require('express3'),
   express = require('express'),
   fs = require('fs');
 
@@ -15,8 +16,8 @@ describe('express-locale', function () {
       config = {};
 
     function startServer(done) {
-      app = express()
-        .use(express.cookieParser())
+      app = express3()
+        .use(express3.cookieParser())
         .use(locale(config))
         .use(function (req, res, next) {
           res.end(JSON.stringify(req.locale));
