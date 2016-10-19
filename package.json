@@ -6,12 +6,11 @@
   "scripts": {
     "lint": "eslint index.js src test",
     "build": "babel src -d lib",
-    "mocha": "mocha --compilers js:babel-register test",
-    "test": "npm run build && npm run mocha",
+    "test": "mocha --compilers js:babel-register",
     "clean": "rm -rf lib",
     "preversion": "npm run lint && npm test",
     "postversion": "git push && git push --tags",
-    "prepublish": "npm run test",
+    "prepublish": "npm run lint && npm run test && npm run build",
     "postpublish": "npm run clean"
   },
   "repository": {
