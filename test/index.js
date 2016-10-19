@@ -1,5 +1,5 @@
 import assert from 'assert';
-import createLocaleMiddleware from '..';
+import createLocaleMiddleware from '../src';
 import createServer from './util/server';
 
 describe('express-locale', () => {

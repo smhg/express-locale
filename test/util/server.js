@@ -1,4 +1,4 @@
-import createLocaleMiddleware from '../..';
+import createLocaleMiddleware from '../../src';
 import http from 'http';
 import express3 from 'express3';
 import express4 from 'express';
@@ -35,13 +35,21 @@ let createServer = (version = 4) => {
       http.get({
         host: 'localhost',
         port: 4000,
-        headers: headers
+        headers
       }, function (res) {
+        const error = res.statusCode >= 500;
+
         res.on('data', chunk => {
           data += chunk;
         });
         res.on('end', () => {
-          callback(JSON.parse(data));
+          let result = {};
+
+          if (!error) {
+            result = JSON.parse(data);
+          }
+
+          callback(result);
         });
       });
     }
