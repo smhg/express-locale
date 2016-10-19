@@ -10,7 +10,7 @@
     "clean": "rm -rf lib",
     "preversion": "npm run lint && npm test",
     "postversion": "git push && git push --tags",
-    "prepublish": "npm run lint && npm run test && npm run build",
+    "prepublishOnly": "npm run lint && npm run test && npm run build",
     "postpublish": "npm run clean"
   },
   "repository": {
