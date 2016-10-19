@@ -1,102 +1,126 @@
 import 'babel-polyfill';
+import createCookieLookup from './lookup/cookie';
+import createHostnameLookup from './lookup/hostname';
+import createDefaultLookup from './lookup/default';
+import createAcceptLanguageLookup from './lookup/accept-language';
 
-// lookup methods
-let lookups = {
-  'cookie': (req, options) => {
-    if (req.cookies) {
-      return req.cookies[options.cookie.name];
-    }
-  },
-  'domain': (req, options) => {
-    if (options.map && options.map.domain && (req.hostname || req.host)) {
-      return options.map.domain[req.hostname || req.host];
-    }
-  },
-  'accept-language': (req, options) => {
-    let locale;
-    let accepted;
-
-    if (req.acceptsLanguages) {
-      accepted = req.acceptsLanguages();
-    } else if (req.acceptedLanguages) {
-      accepted = req.acceptedLanguages;
-    } else {
-      return false;
-    }
-
-    accepted.some(item => {
-      locale = filter(complete(item.replace(/-+/g, '_'), options), options);
-      return locale;
-    });
-
-    return locale;
-  },
-  'default': (req, options) => {
-    return options['default'];
-  }
+const LOOKUPS = {
+  'cookie': createCookieLookup,
+  'hostname': createHostnameLookup,
+  'accept-language': createAcceptLanguageLookup,
+  'default': createDefaultLookup
 };
 
-// filter wrong formats (and optionally non-allowed values)
-function filter (locale, options) {
-  if (locale && locale.length === 5) {
-    if (!options.allowed) {
-      return locale;
-    }
-    if (options.allowed.indexOf(locale) >= 0) {
-      return locale;
-    }
-  }
-}
-
-// complete languages to locale (if options available)
-function complete (locale, options) {
-  if (locale && locale.length === 2 && options.map) {
-    if (options.map.language) {
-      return options.map.language[locale.toLowerCase()];
-    }
-  }
-  return locale;
-}
-
-// lookup locale using specified source method
-function lookup (source, req, options) {
-  if (!(source in lookups)) {
-    throw Error('Locale lookup source method "' + source + '" not defined');
-  }
-  return filter(complete(lookups[source](req, options), options), options);
-}
+const splitLocale = locale => {
+  let [, language, region] = locale.match(/([a-z]{2})_([a-z]{2})/i);
+  language = language.toLowerCase();
+  region = region.toUpperCase();
+  return {language, region};
+};
 
 function createLocaleMiddleware (options = {}) {
   options = Object.assign({
-    default: 'en_GB',
-    cookie: {name: 'locale'},
     priority: ['accept-language', 'default']
   }, options);
 
-  return function (req, res, next) {
+  let lookups = Object.keys(LOOKUPS).reduce((result, lookup) => {
+    result[lookup] = LOOKUPS[lookup](options[lookup]);
+    return result;
+  }, {});
+
+  let middleware = function (req, res, next) {
+    if (typeof options.priority === 'string') {
+      options.priority = [options.priority];
+    }
+
+    let languageBuffer, result;
+
     options.priority.some(source => {
-      let locale = lookup(source, req, options);
+      if (!(source in lookups)) {
+        throw Error('Locale lookup source method "' + source + '" not defined');
+      }
 
-      if (locale) {
-        let [language, region] = locale.split('_');
+      let locales = lookups[source](req);
 
-        req.locale = {
+      if (typeof locales === 'string') {
+        locales = [locales];
+      }
+
+      if (!Array.isArray(locales) || locales.length <= 0) {
+        return false;
+      }
+
+      locales
+        .map(locale => locale.trim().replace(/[^a-z]/i, '_'))
+        .some(locale => {
+          if (locale.length === 2) {
+            languageBuffer = {
+              language: locale.toLowerCase(),
+              source
+            };
+
+            return false;
+          }
+
+          if (locale.length !== 5) {
+            return false;
+          }
+
+          let {language, region} = splitLocale(locale);
+
+          if (typeof languageBuffer === 'undefined' || languageBuffer.language === language) {
+            locale = `${language}_${region}`;
+
+            if (Array.isArray(options.allowed)) {
+              if (options.allowed.indexOf(locale) === -1) {
+                languageBuffer = undefined;
+                return false;
+              }
+            }
+
+            result = {
+              code: locale,
+              source,
+              language,
+              region
+            };
+
+            return true;
+          }
+
+          return false;
+        });
+    });
+
+    if (typeof result === 'undefined' &&
+      typeof languageBuffer !== 'undefined' &&
+      'map' in options
+    ) {
+      let locale = options.map[languageBuffer.language];
+
+      if (typeof locale !== 'undefined') {
+        let {language, region} = splitLocale(locale);
+        locale = `${language}_${region}`;
+
+        result = {
           code: locale,
-          source,
+          source: languageBuffer.source,
           language,
           region
         };
       }
+    }
 
-      return locale;
-    });
+    req.locale = result;
 
     next();
   };
-}
 
-createLocaleMiddleware.prototype.addLookup = function (name, lookup) {
-  lookups[name] = lookup;
-};
+  middleware.addLookup = function (name, lookup) {
+    lookups[name] = lookup;
+  };
+
+  return middleware;
+}
 
 module.exports = createLocaleMiddleware;

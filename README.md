@@ -4,7 +4,7 @@ express-locale
 
 Express middleware to determine locale based on configuration and request.
 
-Configuration (likely from a JSON file) enables mappings and lookup priorities.
+Configuration enables mappings and lookup priorities.
 
 
 ## Installation
@@ -31,8 +31,8 @@ You can pass a configuration object to the `createLocaleMiddleware()` call above
 {
   {
     "priority": ["accept-language", "default"],
-    "default": "en_GB",
-    "cookie": {"name": "locale"}
+    "cookie": {"name": "locale"},
+    "default": "en_GB"
   }
 }
 ```
@@ -40,11 +40,11 @@ You can pass a configuration object to the `createLocaleMiddleware()` call above
 #### priority
 Type: `Array` Default value `['accept-language', 'default']`
 
-Defines the order of lookups. The first lookup to return a locale will be the final result.
+Defines the order of lookups. The first lookup to return a full locale will be the final result.
 
-Available values (lookups):
+Built in lookups:
 * `cookie`
-* `domain`
+* `hostname`
 * `accept-language`
 * `default`
 
@@ -55,29 +55,37 @@ Type: `String` Default value `'en_GB'`
 
 The default locale to use (if `'default'` is present in [priority](#priority)).
 
+#### cookie
+Type: `Object` Default value `'{name: 'locale'}'`
+
+Use with [cookie-parser](https://github.com/expressjs/cookie-parser) middleware.
+
+If `'cookie'` is present in [priority](#priority), the cookie's name is read from this configuration object.
+You are responsible for writing the locale to the cookie (e.g. when a user changes their preferred locale in you application).
+
+#### hostname
+Type: `Object` Default value `{}`
+
+If provided and `'hostname'` is present in [priority](#priority), the hostname part of the request is mapped to a locale.
+
 #### allowed
 Type: `Array` Default value `undefined`
 
 Lookup results are validated against this list of allowed locales if provided.
 
-#### cookie.name
-Type: `String` Default value `'locale'`
-
-Use with [cookieParser](http://www.senchalabs.org/connect/cookieParser.html) middleware.
-
-If `'cookie'` is present in [priority](#priority), a cookie with this name is read.
-You are responsible for writing the locale to the cookie (e.g. when a user changes their preferred locale in you application).
-
-### Mappings
-#### map.language
+#### map
 Type: `Array` Default value `undefined`
 
-Lookup results that return only a language can be mapped to a default locale.
-
-#### map.domain
-Type: `Array` Default value `undefined`
-
-If provided and `'domain'` is present in [priority](#priority), the host part of the request is mapped to a locale.
+Maps lookup results that return only a language to a full locale.
 
 ## Custom lookups
-TODO: describe how to derive from path or querystring
+Add a custom lookup by calling `addLookup` on the middleware:
+```javascript
+let localeMiddleware = createLocaleMiddleware({
+  priority: 'custom'
+});
+
+localeMiddleware.addLookup('custom', req => {
+	// custom method to return a locale or an array of locales
+});
+```
