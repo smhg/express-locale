@@ -2,9 +2,7 @@
 express-locale
 ==============
 
-Express middleware to determine locale based on configuration and request.
-
-Configuration enables mappings and lookup priorities.
+Express middleware to determine the [locale identifier](https://en.wikipedia.org/wiki/Locale_(computer_software)) of the incomming request.
 
 
 ## Installation
@@ -16,13 +14,25 @@ Configuration enables mappings and lookup priorities.
 import express from 'express';
 import createLocaleMiddleware from 'express-locale';
 
-express().use(createLocaleMiddleware())
+express()
+  .use(createLocaleMiddleware())
   .use((req, res) => {
     res.end('Request locale: ' + req.locale.code);
   })
   .listen(3000);
 ```
-**Note:** only full locales (language_REGION) are returned, but a mapping of languages to a default locale can be provided (see below).
+
+The `locale` property on the request object will contain an object with this structure:
+```javascript
+{
+	code: 'en_GB',
+	source: 'default',
+	language: 'en',
+	region: 'GB'
+}
+```
+
+**Note:** only full locales (language_REGION) are returned, but a [mapping](#map) of languages to a default locale can be provided.
 
 
 ## Configuration
@@ -42,13 +52,13 @@ Type: `Array` Default value `['accept-language', 'default']`
 
 Defines the order of lookups. The first lookup to return a full locale will be the final result.
 
-Built in lookups:
+Built-in lookups:
 * `cookie`
 * `hostname`
 * `accept-language`
 * `default`
 
-[Custom lookups](#custom-lookups) can be added.
+Read below on how to add [custom lookups](#custom-lookups).
 
 #### default
 Type: `String` Default value `'en_GB'`
@@ -77,6 +87,7 @@ Lookup results are validated against this list of allowed locales if provided.
 Type: `Array` Default value `undefined`
 
 Maps lookup results that return only a language to a full locale.
+
 
 ## Custom lookups
 Add a custom lookup by calling `addLookup` on the middleware:
