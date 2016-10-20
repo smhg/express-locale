@@ -1,4 +1,4 @@
-let createAcceptLanguageLookup = () =>
+const createAcceptLanguageLookup = () =>
   (req) => {
     let locales = [];
 

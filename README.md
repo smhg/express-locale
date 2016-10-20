@@ -42,6 +42,7 @@ You can pass a configuration object to the `createLocaleMiddleware()` call above
   {
     "priority": ["accept-language", "default"],
     "cookie": {"name": "locale"},
+    "query": {"name": "locale"},
     "default": "en_GB"
   }
 }
@@ -54,29 +55,36 @@ Defines the order of lookups. The first lookup to return a full locale will be t
 
 Built-in lookups:
 * `cookie`
+* `query`
 * `hostname`
 * `accept-language`
 * `default`
 
 Read below on how to add [custom lookups](#custom-lookups).
 
-#### default
-Type: `String` Default value `'en_GB'`
-
-The default locale to use (if `'default'` is present in [priority](#priority)).
-
 #### cookie
 Type: `Object` Default value `'{name: 'locale'}'`
 
+The `name` of the cookie that contains the locale for the cookie lookup.
+
 Use with [cookie-parser](https://github.com/expressjs/cookie-parser) middleware.
 
-If `'cookie'` is present in [priority](#priority), the cookie's name is read from this configuration object.
-You are responsible for writing the locale to the cookie (e.g. when a user changes their preferred locale in you application).
+**Note:** you are responsible for writing the locale to the cookie.
+
+#### query
+Type: `Object` Default value `'{name: 'locale'}'`
+
+The `name` of the query string parameter that contains the locale for the query lookup.
 
 #### hostname
 Type: `Object` Default value `{}`
 
-If provided and `'hostname'` is present in [priority](#priority), the hostname part of the request is mapped to a locale.
+A mapping of hostnames to locales for the hostname lookup.
+
+#### default
+Type: `String` Default value `'en_GB'`
+
+The default locale for the default lookup.
 
 #### allowed
 Type: `Array` Default value `undefined`

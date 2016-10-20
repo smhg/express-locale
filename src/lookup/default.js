@@ -1,4 +1,4 @@
-let createDefaultLookup = (locale = 'en_GB') => {
+const createDefaultLookup = (locale = 'en_GB') => {
   const invalidLocaleError = new Error('A valid locale is required for default lookup');
 
   if (typeof locale !== 'string') {

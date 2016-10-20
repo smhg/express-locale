@@ -1,4 +1,4 @@
-let createHostnameLookup = (map = {}) =>
+const createHostnameLookup = (map = {}) =>
   (req) => {
     const hostname = req.hostname || req.host;
 

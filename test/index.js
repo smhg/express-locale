@@ -95,6 +95,20 @@ const runTests = (version) => {
         }, done);
     });
 
+    it('should parse query string', done => {
+      request(createServer(version, {
+        query: {name: 'l'},
+        priority: 'query'
+      }))
+        .get('/?l=fr_CA')
+        .expect({
+          code: 'fr_CA',
+          source: 'query',
+          language: 'fr',
+          region: 'CA'
+        }, done);
+    });
+
     it('should map hostname', done => {
       request(createServer(version, {
         hostname: {'127.0.0.1': 'nl_BE'},

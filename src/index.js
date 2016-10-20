@@ -1,11 +1,13 @@
 import 'babel-polyfill';
 import createCookieLookup from './lookup/cookie';
+import createQueryLookup from './lookup/query';
 import createHostnameLookup from './lookup/hostname';
 import createDefaultLookup from './lookup/default';
 import createAcceptLanguageLookup from './lookup/accept-language';
 
 const LOOKUPS = {
   'cookie': createCookieLookup,
+  'query': createQueryLookup,
   'hostname': createHostnameLookup,
   'accept-language': createAcceptLanguageLookup,
   'default': createDefaultLookup
