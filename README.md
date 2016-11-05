@@ -4,6 +4,8 @@ express-locale
 
 Express middleware to determine the [locale identifier](https://en.wikipedia.org/wiki/Locale_(computer_software)) of the incomming request.
 
+It returns (only) full locale identifiers based on the middleware's configuration. Configuration defines possible sources, their order and, optionally, a whitelist. For performance reasons, on each request, remaining lookups are ignored as soon as a match is found.
+
 
 ## Installation
 `npm install --save express-locale`
@@ -17,36 +19,37 @@ import createLocaleMiddleware from 'express-locale';
 express()
   .use(createLocaleMiddleware())
   .use((req, res) => {
-    res.end('Request locale: ' + req.locale.code);
+    res.end(`Request locale: ${req.locale}`);
   })
   .listen(3000);
 ```
 
-The `locale` property on the request object will contain an object with this structure:
+The `locale` property on the request object will contain an object with these properties:
 ```javascript
 {
-	code: 'en_GB',
 	source: 'default',
 	language: 'en',
 	region: 'GB'
 }
 ```
+When using this object in a string context, its `toString` method returns the locale identifier (`en_GB` in the example above).
 
-**Note:** only full locales (language_REGION) are returned, but a [mapping](#map) of languages to a default locale can be provided.
+**Note:** only full locales (language_REGION) are returned, but a [mapping](#map) of languages to a default locale can be provided as a lookup.
 
 
 ## Configuration
-You can pass a configuration object to the `createLocaleMiddleware()` call above with the default being:
+You can pass a configuration object to `createLocaleMiddleware()` with the default being:
 ```javascript
 {
   {
     "priority": ["accept-language", "default"],
-    "cookie": {"name": "locale"},
-    "query": {"name": "locale"},
     "default": "en_GB"
   }
 }
 ```
+This tells the middleware to use 2 sources in order: `accept-language`, which has no configuration, and `default` which is set to `en_GB`.
+
+The name of the lookup used in the priority list always matches the configuration key.
 
 #### priority
 Type: `Array` Default value `['accept-language', 'default']`
@@ -58,6 +61,7 @@ Built-in lookups:
 * `query`
 * `hostname`
 * `accept-language`
+* `map`
 * `default`
 
 Read below on how to add [custom lookups](#custom-lookups).
@@ -81,6 +85,11 @@ Type: `Object` Default value `{}`
 
 A mapping of hostnames to locales for the hostname lookup.
 
+#### map
+Type: `Object` Default value `{}`
+
+Maps lookup results that return only a language to a full locale.
+
 #### default
 Type: `String` Default value `'en_GB'`
 
@@ -91,20 +100,14 @@ Type: `Array` Default value `undefined`
 
 Lookup results are validated against this list of allowed locales if provided.
 
-#### map
-Type: `Array` Default value `undefined`
-
-Maps lookup results that return only a language to a full locale.
-
 
 ## Custom lookups
-Add a custom lookup by calling `addLookup` on the middleware:
+Add custom lookups or overwrite the default ones by using the `lookups` property:
 ```javascript
 let localeMiddleware = createLocaleMiddleware({
-  priority: 'custom'
-});
-
-localeMiddleware.addLookup('custom', req => {
-	// custom method to return a locale or an array of locales
+  priority: 'custom',
+  lookups: {
+    custom: (req) => req.ip === '127.0.0.1' ? 'en_US' : undefined;
+  }
 });
 ```
