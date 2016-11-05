@@ -4,122 +4,130 @@ import createQueryLookup from './lookup/query';
 import createHostnameLookup from './lookup/hostname';
 import createDefaultLookup from './lookup/default';
 import createAcceptLanguageLookup from './lookup/accept-language';
+import createMapLookup from './lookup/map';
+import createLocale from './locale';
 
-const LOOKUPS = {
+let LOOKUP_CREATORS = {
   'cookie': createCookieLookup,
   'query': createQueryLookup,
   'hostname': createHostnameLookup,
   'accept-language': createAcceptLanguageLookup,
+  'map': createMapLookup,
   'default': createDefaultLookup
 };
 
-const splitLocale = locale => {
-  let [, language, region] = locale.match(/([a-z]{2})_([a-z]{2})/i);
-  language = language.toLowerCase();
-  region = region.toUpperCase();
-  return {language, region};
-};
+const nonLocaleCharacters = /[^a-z]/ig;
+const trailingUnderscores = /^_+|_+$/g;
+const languageOrLocale = /^[a-z]{2}(?:_[a-z]{2})?$/i;
+
+function trimLocale (locale) {
+  return locale
+    .replace(nonLocaleCharacters, '_')
+    .replace(trailingUnderscores, '');
+}
+
+function isLanguageOrLocale (locale) {
+  return languageOrLocale.test(locale);
+}
 
 function createLocaleMiddleware (options = {}) {
   options = Object.assign({
     priority: ['accept-language', 'default']
   }, options);
 
-  let lookups = Object.keys(LOOKUPS).reduce((result, lookup) => {
-    result[lookup] = LOOKUPS[lookup](options[lookup]);
-    return result;
-  }, {});
+  let lookups = Object.assign(
+    Object.keys(LOOKUP_CREATORS).reduce((result, lookup) => {
+      result[lookup] = LOOKUP_CREATORS[lookup](options[lookup]);
+      return result;
+    }, {}),
+    options.lookups || {}
+  );
 
-  let middleware = function (req, res, next) {
-    if (typeof options.priority === 'string') {
-      options.priority = [options.priority];
-    }
+  if (typeof options.priority === 'string') {
+    options.priority = options.priority.split(/ *, */g);
+  }
 
-    let languageBuffer, result;
+  if (!options.priority.every(source => source in lookups)) {
+    let notFound = options.priority.filter(source => !(source in lookups));
 
-    options.priority.some(source => {
-      if (!(source in lookups)) {
-        throw Error('Locale lookup source method "' + source + '" not defined');
-      }
+    throw Error(`Undefined lookup${notFound.length === 1 ? '' : 's'} (${notFound.join(', ')})`);
+  }
 
-      let locales = lookups[source](req);
+  function isAllowed (locale) {
+    return !options.allowed || options.allowed.indexOf(locale) >= 0;
+  }
+
+  function* lookup (req, all) {
+    for (let source of options.priority) {
+      let locales = lookups[source](req, all);
 
       if (typeof locales === 'string') {
         locales = [locales];
       }
 
-      if (!Array.isArray(locales) || locales.length <= 0) {
-        return false;
+      if (Array.isArray(locales) && locales.length > 0) {
+        locales = locales
+          .map(trimLocale)
+          .filter(isLanguageOrLocale)
+          .filter(isAllowed)
+          .map(code => createLocale(code, source));
+
+        for (let locale of locales) {
+          yield locale;
+        }
       }
+    }
+  }
 
-      locales
-        .map(locale => locale.trim().replace(/[^a-z]/i, '_'))
-        .some(locale => {
-          if (locale.length === 2) {
-            languageBuffer = {
-              language: locale.toLowerCase(),
-              source
-            };
+  let middleware = function (req, res, next) {
+    let locales = [];
+    let result;
+    let languageBuffer;
 
-            return false;
-          }
-
-          if (locale.length !== 5) {
-            return false;
-          }
-
-          let {language, region} = splitLocale(locale);
-
-          if (typeof languageBuffer === 'undefined' || languageBuffer.language === language) {
-            locale = `${language}_${region}`;
-
-            if (Array.isArray(options.allowed)) {
-              if (options.allowed.indexOf(locale) === -1) {
-                languageBuffer = undefined;
-                return false;
-              }
+    function filterResult (locale) {
+      if ('region' in locale) {
+        if (languageBuffer) {
+          if (languageBuffer.language === locale.language) {
+            if (languageBuffer.source !== locale.source) {
+              locale.source = [languageBuffer.source, locale.source];
             }
 
-            result = {
-              code: locale,
-              source,
-              language,
-              region
-            };
-
-            return true;
+            return locale;
           }
+        } else {
+          return locale;
+        }
+      } else {
+        if (!languageBuffer) {
+          languageBuffer = locale;
+        }
+      }
+    }
 
-          return false;
-        });
-    });
+    // perform lookups one by one, exiting early
+    for (let locale of lookup(req, locales)) {
+      if ((result = filterResult(locale))) {
+        break;
+      }
 
-    if (typeof result === 'undefined' &&
-      typeof languageBuffer !== 'undefined' &&
-      'map' in options
-    ) {
-      let locale = options.map[languageBuffer.language];
+      locales.push(locale);
+    }
 
-      if (typeof locale !== 'undefined') {
-        let {language, region} = splitLocale(locale);
-        locale = `${language}_${region}`;
+    // if no early exit was found, eliminate results one by one
+    while (!result && locales.length > 0) {
+      languageBuffer = undefined;
+      locales.shift();
 
-        result = {
-          code: locale,
-          source: languageBuffer.source,
-          language,
-          region
-        };
+      for (let locale of locales) {
+        if ((result = filterResult(locale))) {
+          break;
+        }
       }
     }
 
     req.locale = result;
 
     next();
-  };
-
-  middleware.addLookup = function (name, lookup) {
-    lookups[name] = lookup;
   };
 
   return middleware;

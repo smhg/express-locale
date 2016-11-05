@@ -1,6 +1,6 @@
 const createAcceptLanguageLookup = () =>
   (req) => {
-    let locales = [];
+    let locales;
 
     if ('acceptsLanguages' in req) {
       locales = req.acceptsLanguages();
@@ -8,11 +8,9 @@ const createAcceptLanguageLookup = () =>
       locales = req.acceptedLanguages;
     }
 
-    locales = locales
-      .filter(locale =>
-        locale.length === 2 ||
-        locale.length === 5
-      );
+    if (!Array.isArray(locales)) {
+      return;
+    }
 
     if (locales.length <= 0) {
       return;
