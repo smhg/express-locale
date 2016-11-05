@@ -41,10 +41,8 @@ When using this object in a string context, its `toString` method returns the lo
 You can pass a configuration object to `createLocaleMiddleware()` with the default being:
 ```javascript
 {
-  {
-    "priority": ["accept-language", "default"],
-    "default": "en_GB"
-  }
+  "priority": ["accept-language", "default"],
+  "default": "en_GB"
 }
 ```
 This tells the middleware to use 2 sources in order: `accept-language`, which has no configuration, and `default` which is set to `en_GB`.
