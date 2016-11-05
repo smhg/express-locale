@@ -1,5 +1,5 @@
 import assert from 'assert';
-import createLocaleMiddleware, {addLocaleLookup} from '../src';
+import createLocaleMiddleware from '../src';
 import request from 'supertest';
 import express3 from 'express3';
 import express4 from 'express';
