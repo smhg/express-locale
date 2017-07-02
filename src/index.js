@@ -56,7 +56,7 @@ function createLocaleMiddleware (options = {}) {
     return !options.allowed || options.allowed.indexOf(locale) >= 0;
   }
 
-  function* lookup (req, all) {
+  function * lookup (req, all) {
     for (let source of options.priority) {
       let locales = lookups[source](req, all);
 
