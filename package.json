@@ -42,7 +42,7 @@
     "express": "^4.15.5",
     "express3": "^0.0.0",
     "mocha": "^3.5.3",
-    "supertest": "^3.0.0"
+    "supertest": "^2.0.0"
   },
   "dependencies": {
     "babel-runtime": "^6.26.0"
