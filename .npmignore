@@ -6,4 +6,3 @@ test
 .gitignore
 .travis.yml
 src
-package-lock.json
