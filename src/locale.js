@@ -1,7 +1,7 @@
 function splitLocale (locale) {
   let [, language, region] = locale.match(/([a-z]{2})(?:_([a-z]{2}))?/i);
 
-  let result = {language: language.toLowerCase()};
+  let result = { language: language.toLowerCase() };
 
   if (region) {
     result.region = region.toUpperCase();

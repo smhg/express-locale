@@ -17,7 +17,7 @@ const createServer = (expressVersion, middlewareOptions) => {
 describe('()', () => {
   it('should return a function', () => {
     let type = typeof createLocaleMiddleware();
-    assert.equal(type, 'function');
+    assert.strictEqual(type, 'function');
   });
 
   it('should extend the request object', () => {
@@ -26,7 +26,7 @@ describe('()', () => {
     let req = {};
     localeMiddleware(req, {}, () => {});
     assert('locale' in req);
-    assert.notEqual(req.locale, undefined);
+    assert.notStrictEqual(req.locale, undefined);
   });
 });
 
@@ -41,8 +41,8 @@ describe('.addLookup()', () => {
 
     let req = {};
     localeMiddleware(req, {}, () => {});
-    assert.equal(req.locale, 'fr_FR');
-    assert.equal(req.locale.source, 'custom');
+    assert.strictEqual(req.locale.toString(), 'fr_FR');
+    assert.strictEqual(req.locale.source, 'custom');
   });
 });
 
@@ -80,7 +80,7 @@ const runTests = (expressVersion) => {
 
     it('should read cookie', done => {
       request(createServer(expressVersion, {
-        cookie: {name: 'lang'},
+        cookie: { name: 'lang' },
         priority: 'cookie'
       }))
         .get('/')
@@ -94,7 +94,7 @@ const runTests = (expressVersion) => {
 
     it('should parse query string', done => {
       request(createServer(expressVersion, {
-        query: {name: 'l'},
+        query: { name: 'l' },
         priority: 'query'
       }))
         .get('/?l=fr_CA')
@@ -107,7 +107,7 @@ const runTests = (expressVersion) => {
 
     it('should map hostname', done => {
       request(createServer(expressVersion, {
-        hostname: {'127.0.0.1': 'nl_BE'},
+        hostname: { '127.0.0.1': 'nl_BE' },
         priority: 'hostname'
       }))
         .get('/')
@@ -135,7 +135,7 @@ const runTests = (expressVersion) => {
     it('should map a language to a default', done => {
       request(createServer(expressVersion, {
         priority: 'cookie,map',
-        map: {'de': 'de_DE'}
+        map: { 'de': 'de_DE' }
       }))
         .get('/')
         .set('Cookie', 'locale=de')
@@ -148,7 +148,7 @@ const runTests = (expressVersion) => {
 
     it('should skip mapping if the same language returns in the next locale', done => {
       request(createServer(expressVersion, {
-        map: {'de': 'de_DE'}
+        map: { 'de': 'de_DE' }
       }))
         .get('/')
         .set('Accept-Language', 'de,de-CH;q=0.8,en;q=0.6')
@@ -162,7 +162,7 @@ const runTests = (expressVersion) => {
     it('should handle multiple lookups', done => {
       request(createServer(expressVersion, {
         priority: ['cookie', 'query', 'accept-language', 'map', 'default'],
-        map: {'cs': 'cs_CZ'}
+        map: { 'cs': 'cs_CZ' }
       }))
         .get('/')
         .set('Accept-Language', 'cs,de;q=0.8,de-AT;q=0.6')
@@ -176,7 +176,7 @@ const runTests = (expressVersion) => {
     it('should work', done => {
       request(createServer(expressVersion, {
         priority: ['cookie', 'query', 'accept-language', 'map', 'default'],
-        map: {'en': 'en_GB'}
+        map: { 'en': 'en_GB' }
       }))
         .get('/?locale=en')
         .set('Accept-Language', 'nl,nl-BE;q=0.8,en-US;q=0.6')

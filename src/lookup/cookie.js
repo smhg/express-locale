@@ -1,4 +1,4 @@
-const createCookieLookup = ({name = 'locale'} = {}) => {
+const createCookieLookup = ({ name = 'locale' } = {}) => {
   const noNameError = new Error('A cookie name is required for cookie locale lookup');
 
   if (typeof name !== 'string' || name.trim().length <= 0) {
