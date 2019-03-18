@@ -31,7 +31,8 @@ function isLanguageOrLocale (locale) {
 
 function createLocaleMiddleware (options = {}) {
   options = Object.assign({
-    priority: ['accept-language', 'default']
+    priority: ['accept-language', 'default'],
+    requestProperty: 'locale'
   }, options);
 
   let lookups = Object.assign(
@@ -124,7 +125,7 @@ function createLocaleMiddleware (options = {}) {
       }
     }
 
-    req.locale = result;
+    req[options.requestProperty] = result;
 
     next();
   };
