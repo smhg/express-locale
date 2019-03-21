@@ -20,13 +20,22 @@ describe('()', () => {
     assert.strictEqual(type, 'function');
   });
 
-  it('should extend the request object', () => {
+  it('should extend the request object adding the default requestProperty', () => {
     let localeMiddleware = createLocaleMiddleware();
 
     let req = {};
     localeMiddleware(req, {}, () => {});
     assert('locale' in req);
     assert.notStrictEqual(req.locale, undefined);
+  });
+
+  it('should extend the request object adding the custom requestProperty', () => {
+    let localeMiddleware = createLocaleMiddleware({ requestProperty: 'custom-locale' });
+
+    let req = {};
+    localeMiddleware(req, {}, () => {});
+    assert('custom-locale' in req);
+    assert.notStrictEqual(req['custom-locale'], undefined);
   });
 });
 

@@ -98,6 +98,10 @@ Type: `Array` Default value `undefined`
 
 Lookup results are validated against this list of allowed locales if provided.
 
+#### Request property
+Type: `String` Default value `'locale'`
+
+By default, the locale is attached to `req.locale` but can be configured with the `requestProperty` option.
 
 ## Custom lookups
 Add custom lookups or overwrite the default ones by using the `lookups` property:
@@ -108,4 +112,7 @@ let localeMiddleware = createLocaleMiddleware({
     custom: (req) => req.ip === '127.0.0.1' ? 'en_US' : undefined;
   }
 });
+
+
+
 ```
