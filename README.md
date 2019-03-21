@@ -98,7 +98,7 @@ Type: `Array` Default value `undefined`
 
 Lookup results are validated against this list of allowed locales if provided.
 
-#### Request property
+#### requestProperty
 Type: `String` Default value `'locale'`
 
 By default, the locale is attached to `req.locale` but can be configured with the `requestProperty` option.
