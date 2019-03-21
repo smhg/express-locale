@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.0] - 2019-03-21
+### Added
+- Module usage (`module` entry in package.json)
+
 ## [1.1.0] - 2019-03-21
 ### Added
 - Request property configuration option (thx @nachaos)
@@ -48,7 +52,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First working version
 
-[Unreleased]: https://github.com/smhg/express-locale/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/smhg/express-locale/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/smhg/express-locale/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/smhg/express-locale/compare/v1.0.5...v1.1.0
 [1.0.5]: https://github.com/smhg/express-locale/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/smhg/express-locale/compare/v1.0.3...v1.0.4
