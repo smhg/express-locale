@@ -11,9 +11,7 @@ const createDefaultLookup = (locale = 'en_GB') => {
     throw invalidLocaleError;
   }
 
-  return () => {
-    return locale;
-  };
+  return () => locale;
 };
 
 export default createDefaultLookup;

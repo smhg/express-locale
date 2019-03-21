@@ -30,18 +30,19 @@ function isLanguageOrLocale (locale) {
 }
 
 function createLocaleMiddleware (options = {}) {
-  options = Object.assign({
+  options = {
     priority: ['accept-language', 'default'],
-    requestProperty: 'locale'
-  }, options);
+    requestProperty: 'locale',
+    ...options
+  };
 
-  const lookups = Object.assign(
-    Object.keys(LOOKUP_CREATORS).reduce((result, lookup) => {
+  const lookups = {
+    ...Object.keys(LOOKUP_CREATORS).reduce((result, lookup) => {
       result[lookup] = LOOKUP_CREATORS[lookup](options[lookup]);
       return result;
     }, {}),
-    options.lookups || {}
-  );
+    ...(options.lookups || {})
+  };
 
   if (typeof options.priority === 'string') {
     options.priority = options.priority.split(/ *, */g);
