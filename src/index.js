@@ -6,7 +6,7 @@ import createAcceptLanguageLookup from './lookup/accept-language';
 import createMapLookup from './lookup/map';
 import createLocale from './locale';
 
-let LOOKUP_CREATORS = {
+const LOOKUP_CREATORS = {
   'cookie': createCookieLookup,
   'query': createQueryLookup,
   'hostname': createHostnameLookup,
@@ -35,7 +35,7 @@ function createLocaleMiddleware (options = {}) {
     requestProperty: 'locale'
   }, options);
 
-  let lookups = Object.assign(
+  const lookups = Object.assign(
     Object.keys(LOOKUP_CREATORS).reduce((result, lookup) => {
       result[lookup] = LOOKUP_CREATORS[lookup](options[lookup]);
       return result;
@@ -48,7 +48,7 @@ function createLocaleMiddleware (options = {}) {
   }
 
   if (!options.priority.every(source => source in lookups)) {
-    let notFound = options.priority.filter(source => !(source in lookups));
+    const notFound = options.priority.filter(source => !(source in lookups));
 
     throw Error(`Undefined lookup${notFound.length === 1 ? '' : 's'} (${notFound.join(', ')})`);
   }
@@ -79,8 +79,8 @@ function createLocaleMiddleware (options = {}) {
     }
   }
 
-  let middleware = function (req, res, next) {
-    let locales = [];
+  const middleware = function (req, res, next) {
+    const locales = [];
     let result;
     let languageBuffer;
 

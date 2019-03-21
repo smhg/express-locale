@@ -1,7 +1,7 @@
 function splitLocale (locale) {
-  let [, language, region] = locale.match(/([a-z]{2})(?:_([a-z]{2}))?/i);
+  const [, language, region] = locale.match(/([a-z]{2})(?:_([a-z]{2}))?/i);
 
-  let result = { language: language.toLowerCase() };
+  const result = { language: language.toLowerCase() };
 
   if (region) {
     result.region = region.toUpperCase();
@@ -13,7 +13,7 @@ function splitLocale (locale) {
 function createLocale (code, source) {
   let cachedString;
 
-  let proto = {
+  const proto = {
     ...splitLocale(code),
     toString: () => {
       if (!cachedString) {
