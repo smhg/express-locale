@@ -141,6 +141,20 @@ const runTests = (expressVersion) => {
         }, done);
     });
 
+    it('should return default even when default is not in allowed', done => {
+      request(createServer(expressVersion, {
+        default: 'de_DE',
+        allowed: ['de_AT', 'de_CH']
+      }))
+        .get('/')
+        .set('Accept-Language', 'en,en-GB;q=0.8')
+        .expect({
+          source: 'default',
+          language: 'de',
+          region: 'DE'
+        }, done);
+    });
+
     it('should map a language to a default', done => {
       request(createServer(expressVersion, {
         priority: 'cookie,map',
