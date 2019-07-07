@@ -55,7 +55,7 @@ function createLocaleMiddleware (options = {}) {
   }
 
   function isAllowed (locale) {
-    return !options.allowed || options.allowed.indexOf(locale) >= 0 || ( options.default && options.default === locale );
+    return !options.allowed || options.allowed.indexOf(locale) >= 0 || (options.default && options.default === locale);
   }
 
   function * lookup (req, all) {
