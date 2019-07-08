@@ -9,4 +9,4 @@ const createHostnameLookup = (map = {}) =>
     return map[hostname];
   };
 
-export default createHostnameLookup;
+module.exports = createHostnameLookup;

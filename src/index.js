@@ -1,10 +1,10 @@
-import createCookieLookup from './lookup/cookie';
-import createQueryLookup from './lookup/query';
-import createHostnameLookup from './lookup/hostname';
-import createDefaultLookup from './lookup/default';
-import createAcceptLanguageLookup from './lookup/accept-language';
-import createMapLookup from './lookup/map';
-import createLocale from './locale';
+const createCookieLookup = require('./lookup/cookie');
+const createQueryLookup = require('./lookup/query');
+const createHostnameLookup = require('./lookup/hostname');
+const createDefaultLookup = require('./lookup/default');
+const createAcceptLanguageLookup = require('./lookup/accept-language');
+const createMapLookup = require('./lookup/map');
+const createLocale = require('./locale');
 
 const LOOKUP_CREATORS = {
   'cookie': createCookieLookup,

@@ -1,8 +1,8 @@
-import assert from 'assert';
-import createLocaleMiddleware from '../src';
-import request from 'supertest';
-import express from 'express';
-import cookieParser from 'cookie-parser';
+const assert = require('assert');
+const createLocaleMiddleware = require('../src');
+const request = require('supertest');
+const express = require('express');
+const cookieParser = require('cookie-parser');
 
 const createServer = (middlewareOptions) => {
   return express()

@@ -18,4 +18,4 @@ const createCookieLookup = ({ name = 'locale' } = {}) => {
   };
 };
 
-export default createCookieLookup;
+module.exports = createCookieLookup;

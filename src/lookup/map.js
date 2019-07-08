@@ -6,4 +6,4 @@ const createMapLookup = (map = {}) => {
   };
 };
 
-export default createMapLookup;
+module.exports = createMapLookup;

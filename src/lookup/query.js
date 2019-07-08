@@ -14,4 +14,4 @@ const createQueryLookup = ({ name = 'locale' } = {}) => {
   };
 };
 
-export default createQueryLookup;
+module.exports = createQueryLookup;

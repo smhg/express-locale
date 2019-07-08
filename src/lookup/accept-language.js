@@ -19,4 +19,4 @@ const createAcceptLanguageLookup = () =>
     return locales;
   };
 
-export default createAcceptLanguageLookup;
+module.exports = createAcceptLanguageLookup;

@@ -14,4 +14,4 @@ const createDefaultLookup = (locale = 'en_GB') => {
   return () => locale;
 };
 
-export default createDefaultLookup;
+module.exports = createDefaultLookup;
