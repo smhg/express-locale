@@ -59,9 +59,7 @@ function createLocaleMiddleware (options = {}) {
     ]
   ));
 
-  function isAllowed (locale) {
-    return !options.allowed || options.allowed.indexOf(locale) >= 0;
-  }
+  const isAllowed = locale => !options.allowed || options.allowed.indexOf(locale) >= 0;
 
   function * lookup (req, all) {
     for (let source of options.priority) {
