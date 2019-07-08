@@ -7,7 +7,7 @@
   "scripts": {
     "lint": "eslint src test",
     "build": "babel src -d lib",
-    "test": "mocha --compilers js:babel-register",
+    "test": "mocha --require babel-core/register",
     "clean": "rm -rf lib",
     "preversion": "npm run lint && npm test",
     "postversion": "git push && git push --tags",
