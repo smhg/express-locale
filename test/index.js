@@ -36,9 +36,7 @@ describe('()', () => {
     assert('custom-locale' in req);
     assert.notStrictEqual(req['custom-locale'], undefined);
   });
-});
 
-describe('.addLookup()', () => {
   it('should support custom lookup methods', () => {
     let localeMiddleware = createLocaleMiddleware({
       priority: ['custom'],
@@ -48,7 +46,9 @@ describe('.addLookup()', () => {
     });
 
     let req = {};
+
     localeMiddleware(req, {}, () => {});
+
     assert.strictEqual(req.locale.toString(), 'fr_FR');
     assert.strictEqual(req.locale.source, 'custom');
   });

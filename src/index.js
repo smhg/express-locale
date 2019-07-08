@@ -36,23 +36,28 @@ function createLocaleMiddleware (options = {}) {
     ...options
   };
 
-  const lookups = {
-    ...Object.keys(LOOKUP_CREATORS).reduce((result, lookup) => {
-      result[lookup] = LOOKUP_CREATORS[lookup](options[lookup]);
-      return result;
-    }, {}),
-    ...(options.lookups || {})
-  };
-
   if (typeof options.priority === 'string') {
     options.priority = options.priority.split(/ *, */g);
   }
 
-  if (!options.priority.every(source => source in lookups)) {
-    const notFound = options.priority.filter(source => !(source in lookups));
+  options.lookups = options.lookups || {};
 
-    throw Error(`Undefined lookup${notFound.length === 1 ? '' : 's'} (${notFound.join(', ')})`);
+  const isDefined = name => (name in LOOKUP_CREATORS) || (name in options.lookups);
+
+  if (!options.priority.every(isDefined)) {
+    const notFound = options.priority.filter(name => !isDefined(name));
+
+    throw new Error(`Undefined lookup${notFound.length === 1 ? '' : 's'} (${notFound.join(', ')})`);
   }
+
+  const lookups = new Map(options.priority.map(
+    name => [
+      name,
+      name in options.lookups
+        ? options.lookups[name]
+        : LOOKUP_CREATORS[name](options[name])
+    ]
+  ));
 
   function isAllowed (locale) {
     return !options.allowed || options.allowed.indexOf(locale) >= 0;
@@ -60,7 +65,7 @@ function createLocaleMiddleware (options = {}) {
 
   function * lookup (req, all) {
     for (let source of options.priority) {
-      let locales = lookups[source](req, all);
+      let locales = lookups.get(source)(req, all);
 
       if (typeof locales === 'string') {
         locales = [locales];
