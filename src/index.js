@@ -7,12 +7,12 @@ const createMapLookup = require('./lookup/map');
 const createLocale = require('./locale');
 
 const LOOKUP_CREATORS = {
-  'cookie': createCookieLookup,
-  'query': createQueryLookup,
-  'hostname': createHostnameLookup,
+  cookie: createCookieLookup,
+  query: createQueryLookup,
+  hostname: createHostnameLookup,
   'accept-language': createAcceptLanguageLookup,
-  'map': createMapLookup,
-  'default': createDefaultLookup
+  map: createMapLookup,
+  default: createDefaultLookup
 };
 
 const nonLocaleCharacters = /[^a-z]/ig;
@@ -62,7 +62,7 @@ function createLocaleMiddleware (options = {}) {
   const isAllowed = locale => !options.allowed || options.allowed.indexOf(locale) >= 0;
 
   function * lookup (req, all) {
-    for (let source of options.priority) {
+    for (const source of options.priority) {
       let locales = lookups.get(source)(req, all);
 
       if (typeof locales === 'string') {
@@ -76,7 +76,7 @@ function createLocaleMiddleware (options = {}) {
           .filter(isAllowed)
           .map(code => createLocale(code, source));
 
-        for (let locale of locales) {
+        for (const locale of locales) {
           yield locale;
         }
       }
@@ -109,7 +109,7 @@ function createLocaleMiddleware (options = {}) {
     }
 
     // perform lookups one by one, exiting early
-    for (let locale of lookup(req, locales)) {
+    for (const locale of lookup(req, locales)) {
       if ((result = filterResult(locale))) {
         break;
       }
@@ -122,7 +122,7 @@ function createLocaleMiddleware (options = {}) {
       languageBuffer = undefined;
       locales.shift();
 
-      for (let locale of locales) {
+      for (const locale of locales) {
         if ((result = filterResult(locale))) {
           break;
         }

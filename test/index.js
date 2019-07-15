@@ -15,37 +15,37 @@ const createServer = (middlewareOptions) => {
 
 describe('()', () => {
   it('should return a function', () => {
-    let type = typeof createLocaleMiddleware();
+    const type = typeof createLocaleMiddleware();
     assert.strictEqual(type, 'function');
   });
 
   it('should extend the request object adding the default requestProperty', () => {
-    let localeMiddleware = createLocaleMiddleware();
+    const localeMiddleware = createLocaleMiddleware();
 
-    let req = {};
+    const req = {};
     localeMiddleware(req, {}, () => {});
     assert('locale' in req);
     assert.notStrictEqual(req.locale, undefined);
   });
 
   it('should extend the request object adding the custom requestProperty', () => {
-    let localeMiddleware = createLocaleMiddleware({ requestProperty: 'custom-locale' });
+    const localeMiddleware = createLocaleMiddleware({ requestProperty: 'custom-locale' });
 
-    let req = {};
+    const req = {};
     localeMiddleware(req, {}, () => {});
     assert('custom-locale' in req);
     assert.notStrictEqual(req['custom-locale'], undefined);
   });
 
   it('should support custom lookup methods', () => {
-    let localeMiddleware = createLocaleMiddleware({
+    const localeMiddleware = createLocaleMiddleware({
       priority: ['custom'],
       lookups: {
         custom: () => 'fr_FR'
       }
     });
 
-    let req = {};
+    const req = {};
 
     localeMiddleware(req, {}, () => {});
 
@@ -142,7 +142,7 @@ describe('with Express', () => {
   it('should map a language to a default', done => {
     request(createServer({
       priority: 'cookie,map',
-      map: { 'de': 'de_DE' }
+      map: { de: 'de_DE' }
     }))
       .get('/')
       .set('Cookie', 'locale=de')
@@ -155,7 +155,7 @@ describe('with Express', () => {
 
   it('should skip mapping if the same language returns in the next locale', done => {
     request(createServer({
-      map: { 'de': 'de_DE' }
+      map: { de: 'de_DE' }
     }))
       .get('/')
       .set('Accept-Language', 'de,de-CH;q=0.8,en;q=0.6')
@@ -169,7 +169,7 @@ describe('with Express', () => {
   it('should handle multiple lookups', done => {
     request(createServer({
       priority: ['cookie', 'query', 'accept-language', 'map', 'default'],
-      map: { 'cs': 'cs_CZ' }
+      map: { cs: 'cs_CZ' }
     }))
       .get('/')
       .set('Accept-Language', 'cs,de;q=0.8,de-AT;q=0.6')
@@ -183,7 +183,7 @@ describe('with Express', () => {
   it('should work', done => {
     request(createServer({
       priority: ['cookie', 'query', 'accept-language', 'map', 'default'],
-      map: { 'en': 'en_GB' }
+      map: { en: 'en_GB' }
     }))
       .get('/?locale=en')
       .set('Accept-Language', 'nl,nl-BE;q=0.8,en-US;q=0.6')
