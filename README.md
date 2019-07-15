@@ -6,7 +6,7 @@ Express middleware to determine the [locale identifier](https://en.wikipedia.org
 
 It returns (only) full locale identifiers based on the middleware's configuration. Configuration defines possible sources, their order and, optionally, a whitelist. For performance reasons, on each request, remaining lookups are ignored as soon as a match is found.
 
-> Use version 1.x for Express 3 support.
+> Use version 1.x for Express 3 support and/or older Node versions.
 
 ## Installation
 `npm install --save express-locale`
