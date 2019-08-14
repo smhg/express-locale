@@ -1,4 +1,4 @@
-function createDefaultLookup (locale = 'en_GB') {
+function createDefaultLookup (locale = 'en-GB') {
   const invalidLocaleError = new Error('A valid locale is required for default lookup');
 
   if (typeof locale !== 'string') {

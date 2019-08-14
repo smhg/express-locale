@@ -16,13 +16,13 @@ const LOOKUP_CREATORS = {
 };
 
 const nonLocaleCharacters = /[^a-z]/ig;
-const trailingUnderscores = /^_+|_+$/g;
-const languageOrLocale = /^[a-z]{2}(?:_[a-z]{2})?$/i;
+const trailingHyphens = /^-+|-+$/g;
+const languageOrLocale = /^[a-z]{2}(?:-[a-z]{2})?$/i;
 
 function trimLocale (locale) {
   return locale
-    .replace(nonLocaleCharacters, '_')
-    .replace(trailingUnderscores, '');
+    .replace(nonLocaleCharacters, '-')
+    .replace(trailingHyphens, '');
 }
 
 function isLanguageOrLocale (locale) {
