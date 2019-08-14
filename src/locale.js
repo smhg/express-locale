@@ -1,5 +1,5 @@
 function splitLocale (locale) {
-  const [, language, region] = locale.match(/([a-z]{2})(?:[_-]([a-z]{2}))?/i);
+  const [, language, region] = locale.match(/([a-z]{2})(?:-([a-z]{2}))?/i);
 
   const result = { language: language.toLowerCase() };
 
