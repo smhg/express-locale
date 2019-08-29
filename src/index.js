@@ -45,9 +45,9 @@ function createLocaleMiddleware (options = {}) {
   const isDefined = name => (name in LOOKUP_CREATORS) || (name in options.lookups);
 
   if (!options.priority.every(isDefined)) {
-    const notFound = options.priority.filter(name => !isDefined(name));
+    const notFound = options.priority.find(name => !isDefined(name));
 
-    throw new Error(`Undefined lookup${notFound.length === 1 ? '' : 's'} (${notFound.join(', ')})`);
+    throw new Error(`Undefined lookup (${notFound})`);
   }
 
   const lookups = new Map(options.priority.map(

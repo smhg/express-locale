@@ -52,6 +52,19 @@ describe('()', () => {
     assert.strictEqual(req.locale.toString(), 'fr_FR');
     assert.strictEqual(req.locale.source, 'custom');
   });
+
+  it('should check existence of custom lookup methods', () => {
+    function createUndefinedLookup () {
+      createLocaleMiddleware({
+        priority: ['abc', 'def', 'ghi'],
+        lookups: {
+          abc: () => 'fr_FR'
+        }
+      });
+    }
+
+    assert.throws(createUndefinedLookup, new Error('Undefined lookup (def)'));
+  });
 });
 
 describe('with Express', () => {
