@@ -1,5 +1,5 @@
-const createHostnameLookup = (map = {}) =>
-  (req) => {
+function createHostnameLookup (map = {}) {
+  function lookupHostname (req) {
     const hostname = req.hostname || req.host;
 
     if (!(hostname in map)) {
@@ -8,5 +8,10 @@ const createHostnameLookup = (map = {}) =>
 
     return map[hostname];
   };
+
+  lookupHostname.uses = Object.values(map);
+
+  return lookupHostname;
+}
 
 module.exports = createHostnameLookup;

@@ -1,4 +1,4 @@
-const createDefaultLookup = (locale = 'en_GB') => {
+function createDefaultLookup (locale = 'en_GB') {
   const invalidLocaleError = new Error('A valid locale is required for default lookup');
 
   if (typeof locale !== 'string') {
@@ -11,7 +11,13 @@ const createDefaultLookup = (locale = 'en_GB') => {
     throw invalidLocaleError;
   }
 
-  return () => locale;
+  function lookupDefault () {
+    return locale;
+  };
+
+  lookupDefault.uses = [locale];
+
+  return lookupDefault;
 };
 
 module.exports = createDefaultLookup;

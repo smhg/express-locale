@@ -65,6 +65,18 @@ describe('()', () => {
 
     assert.throws(createUndefinedLookup, new Error('Undefined lookup (def)'));
   });
+
+  it('should warn about invalid configuration in non-production env', () => {
+    function createInvalidConfig () {
+      createLocaleMiddleware({
+        priority: ['default'],
+        allowed: ['nl-BE', 'fr-BE'],
+        default: 'en-GB'
+      });
+    }
+
+    assert.throws(createInvalidConfig, new Error('Invalid configration (locale \'en-GB\' in lookup \'default\' should be whitelisted)'));
+  });
 });
 
 describe('with Express', () => {

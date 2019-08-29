@@ -1,5 +1,5 @@
-const createAcceptLanguageLookup = () =>
-  (req) => {
+function createAcceptLanguageLookup () {
+  return function lookupAcceptLanguage (req) {
     let locales;
 
     if ('acceptsLanguages' in req) {
@@ -18,5 +18,6 @@ const createAcceptLanguageLookup = () =>
 
     return locales;
   };
+}
 
 module.exports = createAcceptLanguageLookup;

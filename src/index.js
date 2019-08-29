@@ -61,6 +61,17 @@ function createLocaleMiddleware (options = {}) {
 
   const isAllowed = locale => !options.allowed || options.allowed.indexOf(locale) >= 0;
 
+  if (process.env.NODE_ENV !== 'production') {
+    // validate configuration
+    [...lookups]
+      .forEach(([name, { uses = [] }]) => {
+        uses.filter(locale => !isAllowed(locale))
+          .forEach(locale => {
+            throw new Error(`Invalid configration (locale '${locale}' in lookup '${name}' should be whitelisted)`);
+          });
+      });
+  }
+
   function * lookup (req, all) {
     for (const source of options.priority) {
       let locales = lookups.get(source)(req, all);
