@@ -25,27 +25,27 @@ express()
 ```
 
 The `locale` property on the request object will contain an object with these properties:
-```javascript
+```json
 {
-	source: 'default',
-	language: 'en',
-	region: 'GB'
+	"source": "default",
+	"language": "en",
+	"region": "GB"
 }
 ```
-When using this object in a string context, its `toString` method returns the locale identifier (`en_GB` in the example above).
+When using this object in a string context, its `toString` method returns the locale identifier (`en-GB` in the example above).
 
-**Note:** only full locales (language_REGION) are returned, but a [mapping](#map) of languages to a default locale can be provided as a lookup.
+**Note:** only full locales (language-REGION) are returned, but a [mapping](#map) of languages to a default locale can be provided as a lookup.
 
 
 ## Configuration
 You can pass a configuration object to `createLocaleMiddleware()` with the default being:
-```javascript
+```json
 {
   "priority": ["accept-language", "default"],
-  "default": "en_GB"
+  "default": "en-GB"
 }
 ```
-This tells the middleware to use 2 sources in order: `accept-language`, which has no configuration, and `default` which is set to `en_GB`.
+This tells the middleware to use 2 sources in order: `accept-language`, which has no configuration, and `default` which is set to `en-GB`.
 
 The name of the lookup used in the priority list always matches the configuration key.
 
@@ -89,7 +89,7 @@ Type: `Object` Default value `{}`
 Maps lookup results that return only a language to a full locale.
 
 #### default
-Type: `String` Default value `'en_GB'`
+Type: `String` Default value `'en-GB'`
 
 The default locale for the default lookup.
 
@@ -106,13 +106,10 @@ By default, the locale is attached to `req.locale` but can be configured with th
 ## Custom lookups
 Add custom lookups or overwrite the default ones by using the `lookups` property:
 ```javascript
-let localeMiddleware = createLocaleMiddleware({
-  priority: 'custom',
+createLocaleMiddleware({
+  priority: ['custom'],
   lookups: {
-    custom: (req) => req.ip === '127.0.0.1' ? 'en_US' : undefined;
+    custom: (req) => req.ip === '127.0.0.1' ? 'en-US' : undefined
   }
 });
-
-
-
 ```
