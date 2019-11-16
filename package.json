@@ -26,14 +26,14 @@
   "license": "MIT",
   "devDependencies": {
     "cookie-parser": "^1.4.4",
-    "eslint": "^6.2.2",
+    "eslint": "^6.6.0",
     "eslint-config-standard": "^14.1.0",
     "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-node": "^9.2.0",
+    "eslint-plugin-node": "^10.0.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
     "express": "^4.17.1",
-    "mocha": "^6.2.0",
+    "mocha": "^6.2.2",
     "supertest": "^4.0.2"
   }
 }
