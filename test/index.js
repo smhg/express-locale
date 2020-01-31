@@ -192,6 +192,16 @@ describe('with Express', () => {
       }, done);
   });
 
+  it('should ignore values not whitelisted', done => {
+    request(createServer({
+      priority: ['query', 'map'],
+      allowed: ['en-CA', 'fr-CA'],
+      map: { en: 'en-CA', fr: 'fr-CA' }
+    }))
+      .get('/?locale=fr')
+      .expect('', done);
+  });
+
   it('should skip mapping if the same language returns in the next locale', done => {
     request(createServer({
       map: { de: 'de-DE' }
