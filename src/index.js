@@ -42,7 +42,7 @@ function createLocaleMiddleware (options = {}) {
 
   options.lookups = options.lookups || {};
 
-  const isDefined = name => (name in LOOKUP_CREATORS) || (name in options.lookups);
+  const isDefined = name => (name.toLowerCase() in LOOKUP_CREATORS) || (name in options.lookups);
 
   if (!options.priority.every(isDefined)) {
     const notFound = options.priority.find(name => !isDefined(name));
