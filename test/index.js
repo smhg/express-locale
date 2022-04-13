@@ -110,6 +110,20 @@ describe('with Express', () => {
       .end(done);
   });
 
+  it('should parse accept-language header (setting priority using any case)', done => {
+    request(createServer({
+      priority: 'Accept-Language'
+    }))
+      .get('/')
+      .set('Accept-Language', 'de-CH;q=0.8,en-GB;q=0.6')
+      .expect({
+        source: 'accept-language',
+        language: 'de',
+        region: 'CH'
+      })
+      .end(done);
+  });
+
   it('should read cookie', done => {
     request(createServer({
       cookie: { name: 'lang' },
