@@ -67,7 +67,7 @@ function createLocaleMiddleware (options = {}) {
       .forEach(([name, { uses = [] }]) => {
         uses.filter(locale => !isAllowed(locale))
           .forEach(locale => {
-            throw new Error(`Invalid configration (locale '${locale}' in lookup '${name}' should be whitelisted)`);
+            throw new Error(`Invalid configuration (locale '${locale}' in lookup '${name}' should be whitelisted)`);
           });
       });
   }
