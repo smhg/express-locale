@@ -3,4 +3,3 @@ npm-debug.log
 .eslintrc.js
 test
 .gitignore
-.travis.yml
