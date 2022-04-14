@@ -39,13 +39,11 @@ function createLocaleMiddleware (options = {}) {
   if (typeof options.priority === 'string') {
     options.priority = options.priority.split(/ *, */g);
   }
+  options.priority = options.priority.map(name => name.toLowerCase());
 
   options.lookups = options.lookups || {};
 
-  const isDefined = name => {
-    name = name.toLowerCase();
-    return (name in LOOKUP_CREATORS) || (name in options.lookups);
-  };
+  const isDefined = name => (name in LOOKUP_CREATORS) || (name in options.lookups);
 
   if (!options.priority.every(isDefined)) {
     const notFound = options.priority.find(name => !isDefined(name));
@@ -54,15 +52,12 @@ function createLocaleMiddleware (options = {}) {
   }
 
   const lookups = new Map(options.priority.map(
-    name => {
-      name = name.toLowerCase();
-      return [
-        name,
-        name in options.lookups
-          ? options.lookups[name]
-          : LOOKUP_CREATORS[name](options[name])
-      ];
-    }
+    name => [
+      name,
+      name in options.lookups
+        ? options.lookups[name]
+        : LOOKUP_CREATORS[name](options[name])
+    ]
   ));
 
   const isAllowed = locale => !options.allowed || options.allowed.indexOf(locale) >= 0;
@@ -79,8 +74,7 @@ function createLocaleMiddleware (options = {}) {
   }
 
   function * lookup (req, all) {
-    for (let source of options.priority) {
-      source = source.toLowerCase();
+    for (const source of options.priority) {
       let locales = lookups.get(source)(req, all);
 
       if (typeof locales === 'string') {
