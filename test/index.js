@@ -75,7 +75,7 @@ describe('()', () => {
       });
     }
 
-    assert.throws(createInvalidConfig, new Error('Invalid configration (locale \'en-GB\' in lookup \'default\' should be whitelisted)'));
+    assert.throws(createInvalidConfig, new Error('Invalid configuration (locale \'en-GB\' in lookup \'default\' should be whitelisted)'));
   });
 });
 
