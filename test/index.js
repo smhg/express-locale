@@ -53,15 +53,6 @@ describe('()', () => {
     assert.strictEqual(req.locale.source, 'custom');
   });
 
-  it('should support priority using any case', () => {
-    const localeMiddleware = createLocaleMiddleware({ priority: 'AcCePt-LanGuaGe' });
-
-    const req = {};
-    localeMiddleware(req, {}, () => {});
-    assert('locale' in req);
-    assert.strictEqual(req.locale, undefined);
-  });
-
   it('should check existence of custom lookup methods', () => {
     function createUndefinedLookup () {
       createLocaleMiddleware({
@@ -115,6 +106,20 @@ describe('with Express', () => {
         source: 'accept-language',
         language: 'de',
         region: 'CH'
+      })
+      .end(done);
+  });
+
+  it('should parse accept-language header (setting priority in any case)', done => {
+    request(createServer({
+      priority: 'Accept-Language'
+    }))
+      .get('/')
+      .set('Accept-Language', 'es-MX;q=0.8,en-GB;q=0.6')
+      .expect({
+        source: 'accept-language',
+        language: 'es',
+        region: 'MX'
       })
       .end(done);
   });
