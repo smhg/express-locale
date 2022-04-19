@@ -75,7 +75,7 @@ describe('()', () => {
       });
     }
 
-    assert.throws(createInvalidConfig, new Error('Invalid configration (locale \'en-GB\' in lookup \'default\' should be whitelisted)'));
+    assert.throws(createInvalidConfig, new Error('Invalid configuration (locale \'en-GB\' in lookup \'default\' should be whitelisted)'));
   });
 });
 
@@ -106,6 +106,20 @@ describe('with Express', () => {
         source: 'accept-language',
         language: 'de',
         region: 'CH'
+      })
+      .end(done);
+  });
+
+  it('should parse accept-language header (setting priority in any case)', done => {
+    request(createServer({
+      priority: 'Accept-Language'
+    }))
+      .get('/')
+      .set('Accept-Language', 'es-MX;q=0.8,en-GB;q=0.6')
+      .expect({
+        source: 'accept-language',
+        language: 'es',
+        region: 'MX'
       })
       .end(done);
   });
