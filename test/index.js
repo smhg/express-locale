@@ -110,18 +110,36 @@ describe('with Express', () => {
       .end(done);
   });
 
-  it('should parse accept-language header (setting priority in any case)', done => {
-    request(createServer({
-      priority: 'Accept-Language'
-    }))
-      .get('/')
-      .set('Accept-Language', 'es-MX;q=0.8,en-GB;q=0.6')
-      .expect({
-        source: 'accept-language',
-        language: 'es',
-        region: 'MX'
-      })
-      .end(done);
+  describe('should handle lookup letter case', () => {
+    it('forcing lower case for default lookups', done => {
+      request(createServer({
+        priority: 'Accept-Language'
+      }))
+        .get('/')
+        .set('Accept-Language', 'es-MX;q=0.8,en-GB;q=0.6')
+        .expect({
+          source: 'accept-language',
+          language: 'es',
+          region: 'MX'
+        })
+        .end(done);
+    });
+
+    it('ignoring for custom lookups', done => {
+      request(createServer({
+        priority: 'customLookup',
+        lookups: {
+          customLookup: () => 'fr_FR'
+        }
+      }))
+        .get('/')
+        .expect({
+          source: 'customLookup',
+          language: 'fr',
+          region: 'FR'
+        })
+        .end(done);
+    });
   });
 
   it('should read cookie', done => {

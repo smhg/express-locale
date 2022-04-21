@@ -39,7 +39,10 @@ function createLocaleMiddleware (options = {}) {
   if (typeof options.priority === 'string') {
     options.priority = options.priority.split(/ *, */g);
   }
-  options.priority = options.priority.map(name => name.toLowerCase());
+
+  options.priority = options.priority.map(
+    name => name.toLowerCase() in LOOKUP_CREATORS ? name.toLowerCase() : name
+  );
 
   options.lookups = options.lookups || {};
 
