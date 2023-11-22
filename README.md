@@ -87,6 +87,8 @@ Type: `Object` Default value `{}`
 
 Maps lookup results that return only a language to a full locale.
 
+**Note:** Ensure that you include the `map` property in the array key `priority` to prioritize language mapping in the lookup process.
+
 #### default
 Type: `String` Default value `'en-GB'`
 
