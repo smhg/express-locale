@@ -48,67 +48,94 @@ This tells the middleware to use 2 sources in order: `accept-language`, which ha
 
 The name of the lookup used in the priority list always matches the configuration key.
 
-#### priority
-Type: `Array` Default value `['accept-language', 'default']`
+### Options
 
-Defines the order of lookups. The first lookup to return a full locale will be the final result.
+* `priority` Array, default: `['accept-language', 'default']`
 
-Built-in lookups:
-* `cookie`
-* `query`
-* `hostname`
-* `accept-language`
-* `map`
-* `default`
+  Defines the order of lookups. The first lookup to return a full locale will be the final result.
 
-Read below on how to add [custom lookups](#custom-lookups).
+  Built-in lookups:
+  * `cookie`
+  * `query`
+  * `hostname`
+  * `accept-language`
+  * `map`
+  * `default`
 
-#### cookie
-Type: `Object` Default value `'{name: 'locale'}'`
+  Read below on how to add custom lookups.
 
-The `name` of the cookie that contains the locale for the cookie lookup.
+* `allowed` Array
 
-Use with [cookie-parser](https://github.com/expressjs/cookie-parser) middleware.
+  If provided, each lookup's results are validated against this whitelist.
 
-**Note:** you are responsible for writing the locale to the cookie.
+  > **Note:** since this validation happens after each lookup, values which will still pass through the next lookup (like when using `map`) need to also be whitelisted as in the example below. This will likely be addressed in a future version (see [#20](https://github.com/smhg/express-locale/issues/20)).
+  ```javascript
+  // example
+  createLocaleMiddleware({
+    priority: ['accept-language', 'cookie', 'map'],
+    map: {
+      'en': 'en-US',
+      'fr': 'fr-CA'
+    },
+    allowed: ['en', 'fr', 'en-US', 'fr-CA']
+  });
+  ```
 
-#### query
-Type: `Object` Default value `'{name: 'locale'}'`
+* `requestProperty` String, default `'locale'`
 
-The `name` of the query string parameter that contains the locale for the query lookup.
+  The property on the request object (`req`) in which the locale is set.
 
-#### hostname
-Type: `Object` Default value `{}`
+* `cookie` Object, default `'{name: 'locale'}'`
 
-A mapping of hostnames to locales for the hostname lookup.
+  The `name` of the cookie that contains the locale for the cookie lookup.
 
-#### map
-Type: `Object` Default value `{}`
+  Use with [cookie-parser](https://github.com/expressjs/cookie-parser) middleware.
 
-Maps lookup results that return only a language to a full locale.
+* `query` Object, default `'{name: 'locale'}'`
 
-#### default
-Type: `String` Default value `'en-GB'`
+  The `name` of the query string parameter that contains the locale for the query lookup.
 
-The default locale for the default lookup.
+* `hostname` Object
 
-#### allowed
-Type: `Array` Default value `undefined`
+  A mapping of hostnames to locales for the hostname lookup.
+  ```javascript
+  // example
+  createLocaleMiddleware({
+    priority: ['hostname'],
+    map: {
+      'en.wikipedia.org': 'en-US',
+      'nl.wikipedia.org': 'nl-NL'
+    }
+  });
+  ```
 
-Lookup results are validated against this list of allowed locales if provided.
+* `map` Object
 
-#### requestProperty
-Type: `String` Default value `'locale'`
+  Maps lookup results that return only a language to a full locale.
+  ```javascript
+  // example
+  createLocaleMiddleware({
+    priority: ['accept-language', 'cookie', 'map'],
+    map: {
+      'en': 'en-US',
+      'fr': 'fr-CA'
+    }
+  });
+  ```
 
-By default, the locale is attached to `req.locale` but can be configured with the `requestProperty` option.
+* `default` String, default `'en-GB'`
 
-## Custom lookups
-Add custom lookups or overwrite the default ones by using the `lookups` property:
-```javascript
-createLocaleMiddleware({
-  priority: ['custom'],
-  lookups: {
-    custom: (req) => req.ip === '127.0.0.1' ? 'en-US' : undefined
-  }
-});
-```
+  The default locale for the default lookup.
+
+* `lookups` Object
+ 
+  Add custom lookups or overwrite the default ones by using the `lookups` property.
+  ```javascript
+  // example
+  createLocaleMiddleware({
+    priority: ['custom'],
+    lookups: {
+      custom: (req) => req.ip === '127.0.0.1' ? 'en-US' : undefined
+    }
+  });
+  ```
