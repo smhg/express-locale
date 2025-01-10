@@ -1,8 +1,9 @@
+const { describe, it } = require('node:test');
 const assert = require('assert');
-const createLocaleMiddleware = require('../src');
 const request = require('supertest');
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const createLocaleMiddleware = require('../src');
 
 const createServer = (middlewareOptions) => {
   return express()
@@ -80,24 +81,24 @@ describe('()', () => {
 });
 
 describe('with Express', () => {
-  it('should hook into Express', done => {
-    request(createServer())
+  it('should hook into Express', async () => {
+    await request(createServer())
       .get('/')
-      .expect(200, done);
+      .expect(200);
   });
 
-  it('should return default', done => {
-    request(createServer())
+  it('should return default', async () => {
+    await request(createServer())
       .get('/')
       .expect({
         source: 'default',
         language: 'en',
         region: 'GB'
-      }, done);
+      });
   });
 
-  it('should parse accept-language header', done => {
-    request(createServer({
+  it('should parse accept-language header', async () => {
+    await request(createServer({
       priority: 'accept-language'
     }))
       .get('/')
@@ -106,13 +107,12 @@ describe('with Express', () => {
         source: 'accept-language',
         language: 'de',
         region: 'CH'
-      })
-      .end(done);
+      });
   });
 
   describe('should handle lookup letter case', () => {
-    it('forcing lower case for default lookups', done => {
-      request(createServer({
+    it('forcing lower case for default lookups', async () => {
+      await request(createServer({
         priority: 'Accept-Language'
       }))
         .get('/')
@@ -121,12 +121,11 @@ describe('with Express', () => {
           source: 'accept-language',
           language: 'es',
           region: 'MX'
-        })
-        .end(done);
+        });
     });
 
-    it('ignoring for custom lookups', done => {
-      request(createServer({
+    it('ignoring for custom lookups', async () => {
+      await request(createServer({
         priority: 'customLookup',
         lookups: {
           customLookup: () => 'fr_FR'
@@ -137,13 +136,12 @@ describe('with Express', () => {
           source: 'customLookup',
           language: 'fr',
           region: 'FR'
-        })
-        .end(done);
+        });
     });
   });
 
-  it('should read cookie', done => {
-    request(createServer({
+  it('should read cookie', async () => {
+    await request(createServer({
       cookie: { name: 'lang' },
       priority: 'cookie'
     }))
@@ -153,11 +151,11 @@ describe('with Express', () => {
         source: 'cookie',
         language: 'nl',
         region: 'BE'
-      }, done);
+      });
   });
 
-  it('should read cookie with locale in underscore format', done => {
-    request(createServer({
+  it('should read cookie with locale in underscore format', async () => {
+    await request(createServer({
       cookie: { name: 'lang' },
       priority: 'cookie'
     }))
@@ -167,11 +165,11 @@ describe('with Express', () => {
         source: 'cookie',
         language: 'nl',
         region: 'BE'
-      }, done);
+      });
   });
 
-  it('should parse query string', done => {
-    request(createServer({
+  it('should parse query string', async () => {
+    await request(createServer({
       query: { name: 'l' },
       priority: 'query'
     }))
@@ -180,11 +178,11 @@ describe('with Express', () => {
         source: 'query',
         language: 'fr',
         region: 'CA'
-      }, done);
+      });
   });
 
-  it('should map hostname', done => {
-    request(createServer({
+  it('should map hostname', async () => {
+    await request(createServer({
       hostname: { '127.0.0.1': 'nl-BE' },
       priority: 'hostname'
     }))
@@ -193,11 +191,11 @@ describe('with Express', () => {
         source: 'hostname',
         language: 'nl',
         region: 'BE'
-      }, done);
+      });
   });
 
-  it('should validate against a whitelist', done => {
-    request(createServer({
+  it('should validate against a whitelist', async () => {
+    await request(createServer({
       default: 'de-DE',
       allowed: ['de-DE', 'de-AT', 'de-CH']
     }))
@@ -207,11 +205,11 @@ describe('with Express', () => {
         source: 'default',
         language: 'de',
         region: 'DE'
-      }, done);
+      });
   });
 
-  it('should map a language to a default', done => {
-    request(createServer({
+  it('should map a language to a default', async () => {
+    await request(createServer({
       priority: 'cookie,map',
       map: { de: 'de-DE' }
     }))
@@ -221,21 +219,21 @@ describe('with Express', () => {
         source: ['cookie', 'map'],
         language: 'de',
         region: 'DE'
-      }, done);
+      });
   });
 
-  it('should ignore values not whitelisted', done => {
-    request(createServer({
+  it('should ignore values not whitelisted', async () => {
+    await request(createServer({
       priority: ['query', 'map'],
       allowed: ['en-CA', 'fr-CA'],
       map: { en: 'en-CA', fr: 'fr-CA' }
     }))
       .get('/?locale=fr')
-      .expect('', done);
+      .expect('');
   });
 
-  it('should skip mapping if the same language returns in the next locale', done => {
-    request(createServer({
+  it('should skip mapping if the same language returns in the next locale', async () => {
+    await request(createServer({
       map: { de: 'de-DE' }
     }))
       .get('/')
@@ -244,11 +242,11 @@ describe('with Express', () => {
         source: 'accept-language',
         language: 'de',
         region: 'CH'
-      }, done);
+      });
   });
 
-  it('should handle multiple lookups', done => {
-    request(createServer({
+  it('should handle multiple lookups', async () => {
+    await request(createServer({
       priority: ['cookie', 'query', 'accept-language', 'map', 'default'],
       map: { cs: 'cs-CZ' }
     }))
@@ -258,11 +256,11 @@ describe('with Express', () => {
         source: ['accept-language', 'map'],
         language: 'cs',
         region: 'CZ'
-      }, done);
+      });
   });
 
-  it('should work', done => {
-    request(createServer({
+  it('should work', async () => {
+    await request(createServer({
       priority: ['cookie', 'query', 'accept-language', 'map', 'default'],
       map: { en: 'en-GB' }
     }))
@@ -272,6 +270,6 @@ describe('with Express', () => {
         source: ['query', 'accept-language'],
         language: 'en',
         region: 'US'
-      }, done);
+      });
   });
 });
